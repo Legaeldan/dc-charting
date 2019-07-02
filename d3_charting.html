@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>D3 and Scalable Vector Graphics</title>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+</head>
+
+<body>
+    <h1>Data Visualisation</h1>
+
+    <h2>D3 Charting</h2>
+
+    <div id="draw-here"></div>
+
+    <script>
+        //overall width of the image or chart
+        var w = 500;
+        //overall height of the image of chart. Be careful it's not smaller than the largest number in array
+        var h = 500;
+        //padding between each bar
+        var barPadding = 1;
+
+        var dataset = [
+            450, 100, 100, 279, 500, 25, 350, 120, 80, 130,
+            110, 102, 375, 200, 175, 168, 180, 230, 205,
+        ];
+
+        //scales the bars to suit the viewport
+        var scale = d3.scale.linear()
+            //sets to the max number in the dataset, then scales dependant on that.
+            .domain([0, d3.max(dataset)])
+            .range([0, h])
+
+        //Width of overall image, divided by how many entries are in array. This defines how many bars
+        var colWidth = w / dataset.length;
+        //Width of each bar. Found by the previous of how many bars, and removing the padding amount. currently at 25 (500/19-1)
+        var barWidth = colWidth - barPadding;
+
+        //delect draw space. This is the above div that shows where the svg will draw.
+        var svg = d3.select("#draw-here")
+            //adds the svg element to the div
+            .append("svg")
+            //sets attribute of height defined as above
+            .attr("height", h)
+            //sets attribute width as defined above
+            .attr("width", w);
+
+        svg.selectAll("rect")
+            .data(dataset)
+            .enter()
+            .append("rect")
+            .attr("x", function (d, i) {
+                return i * colWidth;
+            })
+            .attr("y", function (d) {
+                return h - scale(d);
+            })
+            .attr("height", function (d) {
+                return d;
+            })
+            .attr("width", barWidth);
+
+        svg.selectAll("text")
+            .data(dataset)
+            .enter()
+            .append("text")
+            .text(function (d) {
+                return d;
+            })
+            .attr("text-anchor", "middle")
+            .attr("x", function (d, i) {
+                return i * colWidth + barWidth / 2;
+            })
+            .attr("y", function (d) {
+                return h - scale(d) + 14;
+            })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "11px")
+            .attr("fill", "white");
+    </script>
+</body>
+
+</html>
